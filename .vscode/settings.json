@@ -1,0 +1,13 @@
+{
+	"files.associations": {
+		"__hash_table": "cpp",
+		"__node_handle": "cpp",
+		"__split_buffer": "cpp",
+		"memory_resource": "cpp",
+		"memory": "cpp",
+		"sstream": "cpp",
+		"string": "cpp",
+		"unordered_map": "cpp",
+		"vector": "cpp"
+	}
+}
