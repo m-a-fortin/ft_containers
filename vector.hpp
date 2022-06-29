@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/06/28 14:33:33 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/06/28 20:18:51 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,25 +15,27 @@
 #include <memory>
 #include <iostream>
 
-#include "iterator.hpp"
+#include "v_iterator.hpp"
+#include "reverse_iterator.hpp"
 
+//https://en.cppreference.com/w/cpp/container/vector
 namespace ft{
 template<class T, class Allocator = std::allocator<T> >
 class vector{
 	
 	public://public members
-		typedef T									value_type;
-		typedef Allocator							allocator_type;
-		typedef std::size_t							size_type;
-		typedef std::ptrdiff_t						difference_type;
-		typedef value_type&							reference;
-		typedef const value_type&					const_reference;
-		typedef typename Allocator::pointer			pointer;
-		typedef const typename Allocator::pointer	const_pointer;
-		typedef   iterator;
-		//typedef ? const_iterator;
-		//typedef ? reverse_iterator;
-		//typedef ? const_reverse_iterator;
+		typedef T											value_type;
+		typedef Allocator									allocator_type;
+		typedef std::size_t									size_type;
+		typedef std::ptrdiff_t								difference_type;
+		typedef value_type&									reference;
+		typedef const value_type&							const_reference;
+		typedef typename Allocator::pointer					pointer;
+		typedef const typename Allocator::pointer			const_pointer;
+		typedef v_iterator<pointer, vector>					iterator;
+		typedef v_iterator<const_pointer, vector>			const_iterator;
+		typedef ft::reverse_iterator<iterator>				reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 		
 
 	private://private members

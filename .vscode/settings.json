@@ -14,6 +14,7 @@
 		"bitset": "cpp",
 		"initializer_list": "cpp",
 		"iterator": "cpp",
-		"string_view": "cpp"
+		"string_view": "cpp",
+		"iostream": "cpp"
 	}
 }
