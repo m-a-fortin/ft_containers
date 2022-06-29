@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/06/28 20:18:51 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/06/28 20:26:53 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,9 +204,19 @@ class vector{
 			std::cout << "vector size()" << std::endl;
 			return test;
 		};
+		//Returns the maximum number of elements the container is able to hold due to system or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container. 
+		size_type max_size() const{
+			size_type test = 0;
+			std::cout << "vector max_size()" << std::endl;
+			return test;
+		};
 
-
-
+		//Increase the capacity of the vector 
+		void reserve( size_type new_cap ){
+			(void)new_cap;
+			std::cout << "vector size_type()" << std::endl;
+		};
+		//Modifiers
 	//_______________________________________________
 	private://private methods
 };
