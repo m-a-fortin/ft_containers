@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/06/29 21:30:55 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/06/30 17:51:17 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,11 @@ class vector{
 			start_ = allocator_.allocate(count);
 			capacity_end_ = start_ + count;
 			end_ = capacity_end_;
-			add_range_values(start_, end_, value);
+			fill_range(start_, end_, value);
 		};
 
 		template< class InputIt >
-	 vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type() ){
+	 vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type() ) : allocator_(alloc){
 			std::cout << "vector(first, last, alloc = Allocator()) constructor" << std::endl;
 		};
 		
@@ -312,12 +312,16 @@ class vector{
 		
 	//_______________________________________________
 	private://private methods
-		pointer	add_range_values(pointer start, const_pointer end, const_reference value){
+		void fill_range(pointer start, const_pointer end, const_reference value){
 			for (; start != end; ++start){
 				allocator_.construct(start, value);
 			}
-			return start;
 		}
+		
+		template< class InputIt >
+		void fill_range(InputIt first, InputIt last){}
+
+
 };
 };
 
