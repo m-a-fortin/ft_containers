@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/06/28 20:26:53 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/06/29 21:30:55 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "reverse_iterator.hpp"
 
 //https://en.cppreference.com/w/cpp/container/vector
+//vector is a sequence container that encapsulates dynamic size arrays.
 namespace ft{
 template<class T, class Allocator = std::allocator<T> >
 class vector{
@@ -31,7 +32,7 @@ class vector{
 		typedef value_type&									reference;
 		typedef const value_type&							const_reference;
 		typedef typename Allocator::pointer					pointer;
-		typedef const typename Allocator::pointer			const_pointer;
+		typedef const typename Allocator::const_pointer		const_pointer;
 		typedef v_iterator<pointer, vector>					iterator;
 		typedef v_iterator<const_pointer, vector>			const_iterator;
 		typedef ft::reverse_iterator<iterator>				reverse_iterator;
@@ -40,15 +41,40 @@ class vector{
 
 	private://private members
 	 	allocator_type allocator_;
-
+		pointer start_;
+		pointer end_;
+		pointer capacity_end_;
 
 
 	public://public methods
 //MEMBER FUNCTIONS
-		vector(): allocator_(allocator_type()){//default constructor
-			std::cout << "vector default constructor" << std::endl;
+		vector(): allocator_(allocator_type()), start_(NULL), end_(NULL), capacity_end_(NULL){};//clean
+
+		explicit vector( const allocator_type& alloc ): allocator_(alloc), start_(NULL), end_(NULL), capacity_end_(NULL){};//clean
+
+		explicit vector( size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type()): 
+		allocator_(alloc){
+			if (count == 0){
+				start_ = NULL;
+				end_= NULL;
+				capacity_end_ = NULL;
+				return ;
+			}
+			start_ = allocator_.allocate(count);
+			capacity_end_ = start_ + count;
+			end_ = capacity_end_;
+			add_range_values(start_, end_, value);
 		};
 
+		template< class InputIt >
+	 vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type() ){
+			std::cout << "vector(first, last, alloc = Allocator()) constructor" << std::endl;
+		};
+		
+		vector( const vector& other ){
+			std::cout << "vector(other) constructor" << std::endl;
+		};
+		
 		~vector(){
 			std::cout << "vector destructor" << std::endl;
 			
@@ -200,10 +226,9 @@ class vector{
 		
 		//Returns the number of elements in the container, i.e. std::distance(begin(), end()). 
 		size_type size() const{
-			size_type test = 0;
-			std::cout << "vector size()" << std::endl;
-			return test;
-		};
+			return static_cast<size_type>(end_ - start_);
+		};//clean
+
 		//Returns the maximum number of elements the container is able to hold due to system or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container. 
 		size_type max_size() const{
 			size_type test = 0;
@@ -217,7 +242,82 @@ class vector{
 			std::cout << "vector size_type()" << std::endl;
 		};
 		//Modifiers
+
+		//Erases all elements from the container. After this call, size() returns zero. 
+		void clear(){
+			std::cout << "vector clear()" << std::endl;
+		}
+		
+		//Inserts elements at the specified location in the container. See cppreference for overload diff.
+		iterator insert(iterator pos, const T& value){
+			iterator test;
+			std::cout << "vector insert(pos, value)" << std::endl;
+			return test;
+		};
+
+		void insert(iterator pos, size_type count, const T& value){
+			(void)pos;
+			(void)count;
+			(void)value;
+			std::cout << "vector insert(pos, count, value)" << std::endl;
+		};
+
+		template< class InputIt >
+		void insert( iterator pos, InputIt first, InputIt last ){
+			(void)pos;
+			(void)first;
+			(void)last;
+			std::cout << "vector insert(pos, first, last)" << std::endl;
+		};
+		
+		//Erases the specified elements from the container. 
+		iterator erase( iterator pos){
+			std::cout << "vector erase(pos)" << std::endl;
+			return pos;//to be removed
+		};
+		
+		iterator erase( iterator first, iterator last ){
+			(void)first;
+			(void)last;
+			std::cout << "vector erase(first, last)" << std::endl;
+			return first;//to be removed
+		};
+
+		//Appends the given element value to the end of the container. 
+		void push_back(const T& value){
+			(void)value;
+			std::cout << "vector push_back(value)" << std::endl;
+		};
+
+		//Removes the last element of the container. 
+		void pop_back(){
+			std::cout << "vector pop_back()" << std::endl;
+		};
+
+		//Resizes the container to contain count elements. 
+		void resize(size_type count){
+			(void)count;
+			std::cout << "vector resize()" << std::endl;
+		};
+
+		void resize( size_type count, T value = T() ){
+			std::cout << "vector resize(count, T value = T()" << std::endl;
+		};
+		
+		//Exchanges the contents of the container with those of other. Does not invoke any move, copy, or swap operations on individual elements. 
+		void swap(vector& other){
+			(void)other;
+			std::cout << "vector swap()" << std::endl;
+		}
+		
 	//_______________________________________________
 	private://private methods
+		pointer	add_range_values(pointer start, const_pointer end, const_reference value){
+			for (; start != end; ++start){
+				allocator_.construct(start, value);
+			}
+			return start;
+		}
 };
 };
+
