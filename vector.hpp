@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/06/30 17:51:17 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/01 19:07:03 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 #include <memory>
 #include <iostream>
 
-#include "v_iterator.hpp"
+#include "wrap_iterator.hpp"
 #include "reverse_iterator.hpp"
+#include "sfinae.hpp"
 
 //https://en.cppreference.com/w/cpp/container/vector
 //vector is a sequence container that encapsulates dynamic size arrays.
@@ -33,8 +34,8 @@ class vector{
 		typedef const value_type&							const_reference;
 		typedef typename Allocator::pointer					pointer;
 		typedef const typename Allocator::const_pointer		const_pointer;
-		typedef v_iterator<pointer, vector>					iterator;
-		typedef v_iterator<const_pointer, vector>			const_iterator;
+		typedef wrap_iterator<pointer>						iterator;
+		typedef wrap_iterator<const_pointer>				const_iterator;
 		typedef ft::reverse_iterator<iterator>				reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 		

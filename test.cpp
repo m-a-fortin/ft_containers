@@ -1,16 +1,26 @@
 
 
-#include <vector>
-#include <memory>
-#include <string>
-#include "vector.hpp"
+
+#include "sfinae.hpp"
+#include <iostream>
+#include <type_traits>
+
+
+template<class T>
+void	foo(T){
+	std::cout << "SIGNED" << std::endl;
+}
+
+template<class T, typename std::enable_if<std::is_unsigned<T>::value, T>::type last>
+void	foo(T){
+	std::cout << "UNSIGNED" << std::endl;
+}
+
 
 int	main(){
-
-	//declaration / constructor
 	int i = 1;
-	std::vector<int> std_vector(10, i);
-	std:: cout << "Printing size" << std_vector.size() << std::endl;
-	
+	unsigned int j = 0;
 
+	foo(i);
+	foo(j);
 }

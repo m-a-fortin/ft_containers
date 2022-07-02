@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 21:03:07 by mafortin          #+#    #+#             */
-/*   Updated: 2022/06/30 14:00:15 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/01 14:12:15 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,5 @@ int	main(void){
 	std::vector<int, std::allocator<int> > test(10, i, custom_alloc);
 	}
 	logs << ("Full constructor : OK") << std::endl;
+	buf.close();
 }

@@ -60,6 +60,13 @@
 		"system_error": "cpp",
 		"tuple": "cpp",
 		"typeinfo": "cpp",
-		"utility": "cpp"
+		"utility": "cpp",
+		"deque": "cpp",
+		"fstream": "cpp",
+		"iomanip": "cpp",
+		"stack": "cpp",
+		"filesystem": "cpp",
+		"__cxx_version": "cpp",
+		"__functional_base_03": "cpp"
 	}
 }
