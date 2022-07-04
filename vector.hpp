@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/01 19:07:03 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/04 18:48:12 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <memory>
 #include <iostream>
 
-#include "wrap_iterator.hpp"
+#include "iterator.hpp"
 #include "reverse_iterator.hpp"
 #include "sfinae.hpp"
 

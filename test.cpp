@@ -1,21 +1,34 @@
 
 
 
-#include "sfinae.hpp"
+//#include "sfinae.hpp"
 #include <iostream>
 #include <type_traits>
+#include <vector>
 
 
-template<class T>
-void	foo(T){
-	std::cout << "SIGNED" << std::endl;
-}
-
-template<class T, typename std::enable_if<std::is_unsigned<T>::value, T>::type last>
-void	foo(T){
+template<typename T>
+ft::enable_if<std::is_unsigned<T>::value, bool>::type 
+	foo(typename T i){
 	std::cout << "UNSIGNED" << std::endl;
+	return true;
 }
 
+bool	foo(int i){
+	std::cout << "SIGNED" << std::endl;
+	return false;
+	
+}
+
+
+
+int	main(){
+	int i = 1;
+	unsigned int j = 0;
+
+	foo(i);
+	foo(j);
+}
 
 int	main(){
 	int i = 1;
