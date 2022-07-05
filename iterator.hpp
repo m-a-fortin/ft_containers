@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 14:22:29 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/04 19:05:04 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/05 12:36:56 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,31 @@ class wrap_iterator{
     	typedef typename iterator_traits<iterator_type>::difference_type	difference_type;
     	typedef typename iterator_traits<iterator_type>::pointer			pointer;
     	typedef typename iterator_traits<iterator_type>::reference			reference; 
-	public:
-		wrap_iterator() : it_(iterator_type()){};
+	public://constructor
+		wrap_iterator() : base_(iterator_type()){};
 		
-		template<class upIt>
-		wrap_iterator(const wrap_iterator<upIt>& src, typename enable_if<is_convertible<upIt, iterator_type>::value>::type* = 0) : it_(src.it_){}
-
+		template<class srcIt>
+		wrap_iterator(const wrap_iterator<srcIt>& cpy, typename enable_if<is_convertible<srcIt, iterator_type>::value>::type* = 0) : base_(cpy.base()){};
+		wrap_iterator(const wrap_iterator& cpy) : base_(cpy.base()){};
+	public://public method
+		iterator_type base() const{
+			return base_;
+		};
 	private:
-		iterator_type it_;
+		iterator_type base_;
+		/* 
+    constexpr reference operator*() const;
+    constexpr pointer   operator->() const;
+    constexpr reverse_iterator& operator++();
+    constexpr reverse_iterator  operator++(int);
+    constexpr reverse_iterator& operator--();
+    constexpr reverse_iterator  operator--(int);
+    constexpr reverse_iterator  operator+ (difference_type n) const;
+    constexpr reverse_iterator& operator+=(difference_type n);
+    constexpr reverse_iterator  operator- (difference_type n) const;
+    constexpr reverse_iterator& operator-=(difference_type n);
+    constexpr reference         operator[](difference_type n) const;*/
+
 };
 
 };
