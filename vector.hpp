@@ -6,18 +6,25 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/04 18:48:12 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/05 17:27:40 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+
+//STD
 #include <memory>
 #include <iostream>
+#include <algorithm>
+#include <limits>
+#include <stdexcept>
 
+//FT
 #include "iterator.hpp"
 #include "reverse_iterator.hpp"
 #include "sfinae.hpp"
+
 
 //https://en.cppreference.com/w/cpp/container/vector
 //vector is a sequence container that encapsulates dynamic size arrays.
@@ -45,7 +52,6 @@ class vector{
 		pointer start_;
 		pointer end_;
 		pointer capacity_end_;
-
 
 	public://public methods
 //MEMBER FUNCTIONS
@@ -228,13 +234,11 @@ class vector{
 		//Returns the number of elements in the container, i.e. std::distance(begin(), end()). 
 		size_type size() const{
 			return static_cast<size_type>(end_ - start_);
-		};//clean
+		};
 
 		//Returns the maximum number of elements the container is able to hold due to system or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container. 
 		size_type max_size() const{
-			size_type test = 0;
-			std::cout << "vector max_size()" << std::endl;
-			return test;
+			return static_cast<size_type>(std::numeric_limits<difference_type>::max());
 		};
 
 		//Increase the capacity of the vector 
@@ -311,6 +315,9 @@ class vector{
 			std::cout << "vector swap()" << std::endl;
 		}
 		
+		size_type capacity() const{
+			return static_cast<size_type>(capacity_end_ - start_);
+		};
 	//_______________________________________________
 	private://private methods
 		void fill_range(pointer start, const_pointer end, const_reference value){
@@ -319,10 +326,44 @@ class vector{
 			}
 		}
 		
-		template< class InputIt >
-		void fill_range(InputIt first, InputIt last){}
+		/*template< class InputIt >
+		void fill_range(InputIt first, InputIt last){
+			for(; first != last; ++first){
+				allocator_.construct(first, *first);
+			}
+		};TODO MAYBE*/
 
 
+		//return the difference between the capacity end ptr and the start
+
+		//return the new capacity (either size + nb_elem to add or capacity * 2)
+		//throw if size is bigger than max_size
+		size_type new_capacity(size_type new_size) const{
+			const size_type max = max_size();
+			if (new_size > max)
+				throw std::length_error("vector");
+			const size_type cap = capacity();
+			if (cap >= max / 2)
+				return max;
+			
+			return std::max(new_size, cap * 2);
+		};
+		
+		//private method prototype
+		iterator make_iter(pointer p);
+		const_iterator make_iter(const_pointer p);
 };
+
+//return a iterator with a ptr
+template<class Tp, class Alloc>
+inline typename vector<Tp, Alloc>::iterator vector<Tp, Alloc>::make_iter(pointer p){
+	return iterator(p);
+}
+
+//return a const_iterator with a const_ptr
+template<class Tp, class Alloc>
+inline typename vector<Tp, Alloc>::const_iterator vector<Tp, Alloc>::make_iter(const_pointer p){
+	return const_iterator(p);
+}
 };
 
