@@ -7,33 +7,10 @@
 #include <vector>
 
 
-template<typename T>
-ft::enable_if<std::is_unsigned<T>::value, bool>::type 
-	foo(typename T i){
-	std::cout << "UNSIGNED" << std::endl;
-	return true;
-}
+int main(){
 
-bool	foo(int i){
-	std::cout << "SIGNED" << std::endl;
-	return false;
-	
-}
+	std::string test_str;
+	std::string test_str2;
 
-
-
-int	main(){
-	int i = 1;
-	unsigned int j = 0;
-
-	foo(i);
-	foo(j);
-}
-
-int	main(){
-	int i = 1;
-	unsigned int j = 0;
-
-	foo(i);
-	foo(j);
+	std::vector<int> test(test_str, test_str2);
 }

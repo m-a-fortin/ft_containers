@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/05 17:27:40 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/06 14:24:33 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,34 +70,36 @@ class vector{
 			start_ = allocator_.allocate(count);
 			capacity_end_ = start_ + count;
 			end_ = capacity_end_;
-			fill_range(start_, end_, value);
 		};
 
-		template< class InputIt >
-	 vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type() ) : allocator_(alloc){
-			std::cout << "vector(first, last, alloc = Allocator()) constructor" << std::endl;
+	 template< class InputIt >
+	 vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type end, const Allocator& alloc = Allocator() ) : allocator_(alloc){
+
 		};
 		
 		vector( const vector& other ){
-			std::cout << "vector(other) constructor" << std::endl;
+			const size_type other_size = other.capacity();
+			if (v_size > 0){
+				allocator_ = other.allocator_;
+				this->start_ = allocator_.allocate(other_size);
+			}
+			else{
+				vector();
+			}
 		};
 		
 		~vector(){
-			std::cout << "vector destructor" << std::endl;
-			
+			delete_vector();
 		};
 
 		vector& operator=(const vector& rhs){
 			if (this != rhs){
-				std::cout << "vector operator=" << std::endl;
-				// put value assignation here
+				
 			}
 			return *this;
 		};
 
-		void	assign(size_type count, const T& value){
-			std::cout << "vector assign( count,value )" << std::endl;
-		};
+		void	assign(size_type count, const T& value);
 
 		template< class InputIt >
 		void	assign( InputIt first, InputIt last ){//me manque dequoi avec le last. (?)
@@ -105,51 +107,39 @@ class vector{
 		};
 
 		allocator_type get_allocator() const{
-			std::cout << "vector allocator getter" << std::endl;
-			return this->allocator_; //????
+			return this->allocator_;
 		};
 
 //Element access
 		reference at( size_type pos ){
-			reference temp(); //test only
-			std::cout << "vector at()" << std::endl;
-			return temp; //test only
+			if (pos >= size()){
+				std::length_error("vector");
+			}
+			return (*this)[pos];
 		};
 
 		reference operator[](size_type pos){
-			reference temp();//test only
-			std::cout << "vector operator[]" << std::endl;
-			return temp; //test only
+			return *(start_ + pos);
 		};
 
 		const_reference operator[](size_type pos) const{
-			const_reference temp();
-			std::cout << "vector operator[] const" << std::endl;
-			return temp; //test only
+			return *(start_ + pos);
 		};
 
 		reference front(){
-			reference temp();//test only
-			std::cout << "vector front()" << std::endl;
-			return temp;//test only
+			return *begin();
 		};
 
 		const_reference front() const{
-			const_reference temp();
-			std::cout << "vector front() const" << std::endl;
-			return temp;
+			return *begin();
 		};
 
 		reference back(){
-			reference temp();//test only
-			std::cout << "vector back()" << std::endl;
-			return temp;//test only
+			return *end();
 		};
 
 		const_reference back() const{
-			const_reference temp();
-			std::cout << "vector back() const" << std::endl;
-			return temp;
+			return *end();
 		};
 
 		//Returns pointer to the underlying array serving as element storage. The pointer is such that range [data(); data() + size()) is always a valid range, even if the container is empty (data() is not dereferenceable in that case).
@@ -169,66 +159,49 @@ class vector{
 		//Returns an iterator to the first element of the vector.
 		//If the vector is empty, the returned iterator will be equal to end(). 
 		iterator begin(){
-			iterator test;
-			std::cout << "vector begin()" << std::endl;
-			return test;
+			return iterator(start_);
 		};
 
 		const_iterator begin() const{
-			const_iterator test;
-			std::cout << "vector begin() const" << std::endl;
-			return test;
+			return const_iterator(start_);
 		};
 
 
 		//Returns an iterator to the element following the last element of the vector.
 		//This element acts as a placeholder; attempting to access it results in undefined behavior. 
 		iterator end(){
-			iterator test;
-			std::cout << "vector end()" << std::endl;
-			return test;
+			return iterator(end_);
 		};
 
 		const_iterator end() const{
-			const_iterator test;
-			std::cout << "vector end() const" << std::endl;
-			return test;
+			return const_iterator(end_);
 		};
 
 		//Returns a reverse iterator to the first element of the reversed vector. It corresponds to the last element of the non-reversed vector.
 		//If the vector is empty, the returned iterator is equal to rend(). 
 		reverse_iterator rbegin(){
-			reverse_iterator test;
-			std::cout << "vector rbegin()" << std::endl;
-			return test;
+			return reverse_iterator(end());
 		};
 		
 		const_reverse_iterator rbegin() const{
-			const_reverse_iterator test;
-			std::cout << "vector rbegin() const" << std::endl;
-			return test;
+			return const_reverse_iterator(end());
 		};
 
 		//Returns a reverse iterator to the element following the last element of the reversed vector. It corresponds to the element preceding the first element of the non-reversed vector. 
 		//This element acts as a placeholder, attempting to access it results in undefined behavior. 
 		reverse_iterator rend(){
-			reverse_iterator test;
-			std::cout << "vector rend()" << std::endl;
-			return test;
+			return reverse_iterator(start());
 		};
 		
 		const_reverse_iterator rend() const{
-			const_reverse_iterator test;
-			std::cout << "vector rend() const" << std::endl;
-			return test;
+			return const_reverse_iterator(start());
 		};
 
 //Capacity
 
 		//true if the container is empty, false otherwise 
-		bool empty(){
-			std::cout << "vector empty()" << std::endl;
-			return true;
+		bool empty() const{
+			return (this->start_ == this->end_);
 		};
 		
 		//Returns the number of elements in the container, i.e. std::distance(begin(), end()). 
@@ -243,21 +216,29 @@ class vector{
 
 		//Increase the capacity of the vector 
 		void reserve( size_type new_cap ){
-			(void)new_cap;
-			std::cout << "vector size_type()" << std::endl;
+			if (new_cap > max_size()){
+				std::length_error("vector");
+			}
+			if (new_cap > capacity()){
+				pointer new_start = allocator_.allocate(new_cap);
+				pointer new_end = cpy_range(new_start, this->start_, this->end_);
+				clear();
+				this->start_ = new_start;
+				this->end_ = new_end;
+				this->capacity_end_ = this->start_ + new_cap;
+			}
 		};
 		//Modifiers
 
 		//Erases all elements from the container. After this call, size() returns zero. 
 		void clear(){
-			std::cout << "vector clear()" << std::endl;
+			delete_range(this->start_, this->end_);
+			this->end_ = this->start_;
 		}
 		
 		//Inserts elements at the specified location in the container. See cppreference for overload diff.
-		iterator insert(iterator pos, const T& value){
-			iterator test;
-			std::cout << "vector insert(pos, value)" << std::endl;
-			return test;
+		iterator insert(iterator pos, const_reference value){
+			
 		};
 
 		void insert(iterator pos, size_type count, const T& value){
@@ -320,20 +301,35 @@ class vector{
 		};
 	//_______________________________________________
 	private://private methods
-		void fill_range(pointer start, const_pointer end, const_reference value){
+
+		//fill with value every pointer between start and end.
+		void fill_range(pointer start, pointer end, const_reference value){
 			for (; start != end; ++start){
 				allocator_.construct(start, value);
 			}
 		}
-		
-		/*template< class InputIt >
-		void fill_range(InputIt first, InputIt last){
-			for(; first != last; ++first){
-				allocator_.construct(first, *first);
+
+		//cpy the value of original vector pointers too new pointers and return the new end.
+		pointer	cpy_range(pointer new_start, pointer start, pointer end){
+			for(;start != end; ++start){
+				allocator_.construct(new_start, *start);
+				++new_start;
 			}
-		};TODO MAYBE*/
+			return new_start;
+		}
 
+		void	delete_range(pointer start, pointer end){
+			for(; start != end; ++start){
+				allocator_.destroy(start);
+			}
+		}
 
+		void	delete_vector(){
+			if (this->start_ != NULL){
+				delete_range(this->start_, this->end_);
+				allocator_.deallocate(this->start_, capacity());
+			}
+		}
 		//return the difference between the capacity end ptr and the start
 
 		//return the new capacity (either size + nb_elem to add or capacity * 2)
@@ -348,19 +344,18 @@ class vector{
 			
 			return std::max(new_size, cap * 2);
 		};
-		
 		//private method prototype
 		iterator make_iter(pointer p);
 		const_iterator make_iter(const_pointer p);
 };
 
-//return a iterator with a ptr
+//return a iterator with a ptr as argument
 template<class Tp, class Alloc>
 inline typename vector<Tp, Alloc>::iterator vector<Tp, Alloc>::make_iter(pointer p){
 	return iterator(p);
 }
 
-//return a const_iterator with a const_ptr
+//return a const_iterator with a const_ptr as argument
 template<class Tp, class Alloc>
 inline typename vector<Tp, Alloc>::const_iterator vector<Tp, Alloc>::make_iter(const_pointer p){
 	return const_iterator(p);
