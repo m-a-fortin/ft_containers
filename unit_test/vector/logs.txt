@@ -1,0 +1,4 @@
+Default constructor : OK
+Allocator constructor : OK
+aRange constructor : OK
+Full constructor : OK

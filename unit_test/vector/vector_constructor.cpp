@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 21:03:07 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/07 16:46:41 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/08 11:43:55 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <iterator>
+#include <sstream>
 //#include "../custom_allocator.hpp"
 
 int	main(void){
@@ -46,13 +47,12 @@ int	main(void){
 	logs << ("Allocator constructor : OK") << std::endl;
 	//range constructor
 	{
-		std::vector<int> test;
-		for (std::size_t i = 0; i < 100; i++){
-			test.push_back(i + 1);
-		}
-		std::input_iterator<int> it;
-		
-		std::vector<int> test2()
+		std::istringstream s{"abc"};
+    	std::istreambuf_iterator<char> start{s}, end;
+		std::vector<char> test2(start, end);
+		std::vector<char>::iterator it = test2.begin();
+		logs << *it;
+		it++;
 	}
 	logs << ("Range constructor : OK") << std::endl;
 	//full constructor

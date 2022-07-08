@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 18:47:54 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/04 18:22:20 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/07 13:15:39 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,11 @@ struct enable_if<true, T>{
 };
 
 template<class T, class J>
-struct is_convertible{
+struct is_same{
 	static const bool value = false;
 };
 template<class T>
-struct is_convertible<T, T>{
+struct is_same<T, T>{
 	static const bool value = true;
 };
 
@@ -105,5 +105,4 @@ struct is_integral<unsigned long int>{
 	static const bool value = true;
 };
 
-
-};
+}

@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/06 14:24:33 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/07 15:54:46 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
+#include <iterator>
+#include <type_traits>
+#include <cstddef>
 
 //FT
 #include "iterator.hpp"
@@ -49,39 +52,55 @@ class vector{
 
 	private://private members
 	 	allocator_type allocator_;
-		pointer start_;
+		pointer begin_;
 		pointer end_;
 		pointer capacity_end_;
 
 	public://public methods
 //MEMBER FUNCTIONS
-		vector(): allocator_(allocator_type()), start_(NULL), end_(NULL), capacity_end_(NULL){};//clean
+		vector(): allocator_(allocator_type()), begin_(NULL), end_(NULL), capacity_end_(NULL){};//clean
 
-		explicit vector( const allocator_type& alloc ): allocator_(alloc), start_(NULL), end_(NULL), capacity_end_(NULL){};//clean
+		explicit vector( const allocator_type& alloc ): allocator_(alloc), begin_(NULL), end_(NULL), capacity_end_(NULL){};//clean
 
 		explicit vector( size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type()): 
 		allocator_(alloc){
 			if (count == 0){
-				start_ = NULL;
+				begin_ = NULL;
 				end_= NULL;
 				capacity_end_ = NULL;
 				return ;
 			}
-			start_ = allocator_.allocate(count);
-			capacity_end_ = start_ + count;
+			begin_ = allocator_.allocate(count);
+			capacity_end_ = begin_ + count;
 			end_ = capacity_end_;
 		};
 
-	 template< class InputIt >
-	 vector(InputIt first, typename enable_if<!is_integral<InputIt>::value, InputIt>::type end, const Allocator& alloc = Allocator() ) : allocator_(alloc){
-
+	 	template< class InputIt >
+	 	vector(InputIt first, 
+		typename enable_if<is_same<typename iterator_traits<InputIt>::iterator_category, std::forward_iterator_tag>::value &&
+		!is_same<typename iterator_traits<InputIt>::iterator_category, std::forward_iterator_tag>::value && 
+		std::is_constructible<value_type, typename iterator_traits<InputIt>::reference>::value, InputIt>::type end, const Allocator& alloc = Allocator() ) : allocator_(alloc){
+				this->begin_ = NULL;
+				end_= NULL;
+				capacity_end_ = NULL;
+				push_back_loop(first, end);
+		};
+		
+		template< class ForwardIt >
+	 	vector(ForwardIt first, 
+		typename enable_if<is_same<typename iterator_traits<ForwardIt>::iterator_category, std::forward_iterator_tag>::value &&
+		!is_same<typename iterator_traits<ForwardIt>::iterator_category, std::input_iterator_tag>::value && 
+		std::is_constructible<value_type, typename iterator_traits<ForwardIt>::reference>::value, ForwardIt>::type end, const Allocator& alloc = Allocator() ) : allocator_(alloc){
+			size_type size = static_cast<size_type>(std::distance(first, end));
+			this->begin_ = allocator_.allocate(size);
+			this->end_ = cpy_range(this->begin_, first.pointer, end.pointer);
 		};
 		
 		vector( const vector& other ){
 			const size_type other_size = other.capacity();
-			if (v_size > 0){
+			if (other_size > 0){
 				allocator_ = other.allocator_;
-				this->start_ = allocator_.allocate(other_size);
+				this->begin_ = allocator_.allocate(other_size);
 			}
 			else{
 				vector();
@@ -119,11 +138,11 @@ class vector{
 		};
 
 		reference operator[](size_type pos){
-			return *(start_ + pos);
+			return *(begin_ + pos);
 		};
 
 		const_reference operator[](size_type pos) const{
-			return *(start_ + pos);
+			return *(begin_ + pos);
 		};
 
 		reference front(){
@@ -159,11 +178,11 @@ class vector{
 		//Returns an iterator to the first element of the vector.
 		//If the vector is empty, the returned iterator will be equal to end(). 
 		iterator begin(){
-			return iterator(start_);
+			return iterator(begin_);
 		};
 
 		const_iterator begin() const{
-			return const_iterator(start_);
+			return const_iterator(begin_);
 		};
 
 
@@ -190,23 +209,23 @@ class vector{
 		//Returns a reverse iterator to the element following the last element of the reversed vector. It corresponds to the element preceding the first element of the non-reversed vector. 
 		//This element acts as a placeholder, attempting to access it results in undefined behavior. 
 		reverse_iterator rend(){
-			return reverse_iterator(start());
+			return reverse_iterator(begin());
 		};
 		
 		const_reverse_iterator rend() const{
-			return const_reverse_iterator(start());
+			return const_reverse_iterator(begin());
 		};
 
 //Capacity
 
 		//true if the container is empty, false otherwise 
 		bool empty() const{
-			return (this->start_ == this->end_);
+			return (this->begin_ == this->end_);
 		};
 		
 		//Returns the number of elements in the container, i.e. std::distance(begin(), end()). 
 		size_type size() const{
-			return static_cast<size_type>(end_ - start_);
+			return static_cast<size_type>(end_ - begin_);
 		};
 
 		//Returns the maximum number of elements the container is able to hold due to system or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container. 
@@ -221,19 +240,19 @@ class vector{
 			}
 			if (new_cap > capacity()){
 				pointer new_start = allocator_.allocate(new_cap);
-				pointer new_end = cpy_range(new_start, this->start_, this->end_);
+				pointer new_end = cpy_range(new_start, this->begin_, this->end_);
 				clear();
-				this->start_ = new_start;
+				this->begin_ = new_start;
 				this->end_ = new_end;
-				this->capacity_end_ = this->start_ + new_cap;
+				this->capacity_end_ = this->begin_ + new_cap;
 			}
 		};
 		//Modifiers
 
 		//Erases all elements from the container. After this call, size() returns zero. 
 		void clear(){
-			delete_range(this->start_, this->end_);
-			this->end_ = this->start_;
+			delete_range_mem(this->begin_, this->end_);
+			this->end_ = this->begin_;
 		}
 		
 		//Inserts elements at the specified location in the container. See cppreference for overload diff.
@@ -270,9 +289,16 @@ class vector{
 		};
 
 		//Appends the given element value to the end of the container. 
-		void push_back(const T& value){
-			(void)value;
-			std::cout << "vector push_back(value)" << std::endl;
+		void push_back(const_reference value){
+			if (this->end_ != this->capacity_end_){
+				this->allocator_.construct(this->end_, value);
+				++this->end_;
+			}
+			else{
+				size_type new_cap = new_capacity(size() + 1);
+				reserve(new_cap);
+				push_back(value);
+			}
 		};
 
 		//Removes the last element of the container. 
@@ -297,18 +323,25 @@ class vector{
 		}
 		
 		size_type capacity() const{
-			return static_cast<size_type>(capacity_end_ - start_);
+			return static_cast<size_type>(capacity_end_ - begin_);
 		};
 	//_______________________________________________
 	private://private methods
 
+		template<class It>
+		void	push_back_loop(It start, It end){
+			for(; start != end; ++start){
+				push_back(*start);
+			}
+		};
+
 		//fill with value every pointer between start and end.
-		void fill_range(pointer start, pointer end, const_reference value){
+		void fill_range_value(pointer start, pointer end, const_reference value){
 			for (; start != end; ++start){
 				allocator_.construct(start, value);
 			}
-		}
-
+		};
+		
 		//cpy the value of original vector pointers too new pointers and return the new end.
 		pointer	cpy_range(pointer new_start, pointer start, pointer end){
 			for(;start != end; ++start){
@@ -316,20 +349,20 @@ class vector{
 				++new_start;
 			}
 			return new_start;
-		}
+		};
 
-		void	delete_range(pointer start, pointer end){
+		void	delete_range_mem(pointer start, pointer end){
 			for(; start != end; ++start){
 				allocator_.destroy(start);
 			}
-		}
+		};
 
 		void	delete_vector(){
-			if (this->start_ != NULL){
-				delete_range(this->start_, this->end_);
-				allocator_.deallocate(this->start_, capacity());
+			if (this->begin_ != NULL){
+				delete_range_mem(this->begin_, this->end_);
+				allocator_.deallocate(this->begin_, capacity());
 			}
-		}
+		};
 		//return the difference between the capacity end ptr and the start
 
 		//return the new capacity (either size + nb_elem to add or capacity * 2)
@@ -360,5 +393,5 @@ template<class Tp, class Alloc>
 inline typename vector<Tp, Alloc>::const_iterator vector<Tp, Alloc>::make_iter(const_pointer p){
 	return const_iterator(p);
 }
-};
 
+}

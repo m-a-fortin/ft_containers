@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 14:22:29 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/05 14:13:16 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/07 13:15:59 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 
 //https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator
 //source code of <vector> <iterator>
-namespace ft{
 
+namespace ft{
 template<class It>
 struct iterator_traits
 {
@@ -66,7 +66,7 @@ class wrap_iterator{
 		wrap_iterator() : base_(iterator_type()){};
 		
 		template<class srcIt>
-		wrap_iterator(const wrap_iterator<srcIt>& cpy, typename enable_if<is_convertible<srcIt, iterator_type>::value>::type* = 0) : base_(cpy.base()){};
+		wrap_iterator(const wrap_iterator<srcIt>& cpy, typename enable_if<is_same<srcIt, iterator_type>::value>::type* = 0) : base_(cpy.base()){};
 		wrap_iterator(const wrap_iterator& cpy) : base_(cpy.base()){};
 	public://public method
 		iterator_type base() const{
@@ -224,5 +224,4 @@ inline wrap_iterator<it> operator+(typename wrap_iterator<it>::difference_type n
 	incr_it += n;
 	return incr_it;
 }
-
-};
+}
