@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/07 15:54:46 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/11 16:53:19 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ class vector{
 		typedef std::ptrdiff_t								difference_type;
 		typedef value_type&									reference;
 		typedef const value_type&							const_reference;
-		typedef typename Allocator::pointer					pointer;
-		typedef const typename Allocator::const_pointer		const_pointer;
+		typedef typename allocator_type::pointer					pointer;
+		typedef const typename allocator_type::const_pointer		const_pointer;
 		typedef wrap_iterator<pointer>						iterator;
 		typedef wrap_iterator<const_pointer>				const_iterator;
 		typedef ft::reverse_iterator<iterator>				reverse_iterator;
@@ -62,38 +62,33 @@ class vector{
 
 		explicit vector( const allocator_type& alloc ): allocator_(alloc), begin_(NULL), end_(NULL), capacity_end_(NULL){};//clean
 
-		explicit vector( size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type()): 
+		//vector constructor will build array with value x count.
+		explicit vector( size_type count, const_reference value = value_type(), const allocator_type& alloc = allocator_type()): 
 		allocator_(alloc){
 			if (count == 0){
 				begin_ = NULL;
-				end_= NULL;
+				end_ = NULL;
 				capacity_end_ = NULL;
 				return ;
 			}
+			if (count > max_size()){
+				throw std::length_error("vector");
+			}
 			begin_ = allocator_.allocate(count);
-			capacity_end_ = begin_ + count;
+			capacity_end_ = new_capacity(begin_ + count;
 			end_ = capacity_end_;
+			fill_range_value(begin_, end_, value);
 		};
 
-	 	template< class InputIt >
-	 	vector(InputIt first, 
-		typename enable_if<is_same<typename iterator_traits<InputIt>::iterator_category, std::forward_iterator_tag>::value &&
-		!is_same<typename iterator_traits<InputIt>::iterator_category, std::forward_iterator_tag>::value && 
-		std::is_constructible<value_type, typename iterator_traits<InputIt>::reference>::value, InputIt>::type end, const Allocator& alloc = Allocator() ) : allocator_(alloc){
+		//vector constructor that takes 2 iterator(forward and input) as parameters and build a range with it value.
+	 	template< class It >//not sure if enable_if is needed here TO BE TESTED
+	 	vector(It first, typename enable_if<!is_integral<It>::value, It>::type end, const allocator_type& alloc = Allocator() ) : allocator_(alloc){
 				this->begin_ = NULL;
 				end_= NULL;
 				capacity_end_ = NULL;
-				push_back_loop(first, end);
-		};
-		
-		template< class ForwardIt >
-	 	vector(ForwardIt first, 
-		typename enable_if<is_same<typename iterator_traits<ForwardIt>::iterator_category, std::forward_iterator_tag>::value &&
-		!is_same<typename iterator_traits<ForwardIt>::iterator_category, std::input_iterator_tag>::value && 
-		std::is_constructible<value_type, typename iterator_traits<ForwardIt>::reference>::value, ForwardIt>::type end, const Allocator& alloc = Allocator() ) : allocator_(alloc){
-			size_type size = static_cast<size_type>(std::distance(first, end));
-			this->begin_ = allocator_.allocate(size);
-			this->end_ = cpy_range(this->begin_, first.pointer, end.pointer);
+				typedef typename iterator_traits<It>::iterator_category category;
+				construct_range(first, end, category());
+				
 		};
 		
 		vector( const vector& other ){
@@ -101,6 +96,8 @@ class vector{
 			if (other_size > 0){
 				allocator_ = other.allocator_;
 				this->begin_ = allocator_.allocate(other_size);
+				this->capacity_end_ = this->begin_ + other_size;
+				this->end_ = cpy_range(this->begin_, other.begin(), other.end());
 			}
 			else{
 				vector();
@@ -113,16 +110,41 @@ class vector{
 
 		vector& operator=(const vector& rhs){
 			if (this != rhs){
-				
+				assign(rhs.begin(), rhs.end());
 			}
 			return *this;
 		};
 
-		void	assign(size_type count, const T& value);
+		//assign count # of time value to the vector. Replacing the current value.
+		//if count > capacity, allocate a completly new vector. Else fill the range with value
+		//Will delete values if count is < current size
+		void	assign(size_type count, const_reference value){//to be tested
+			if (count <= capacity()){
+				size_type current_size = size();
+				pointer current = std::fill_n(this->begin_, std::min(count, current_size), value);
+				if (count > current_size){
+					this->end_= fill_range_value(this->begin_ + current_size, this->begin_ + count, value);
+				}
+				else{
+					delete_range_mem(current, this->end_);
+					this->end_ = this->begin_ + count;
+				}
+			}
+			else{
+				clear();
+				this->begin_ = allocator_.allocate(count);
+				size_type new_cap = new_capacity(this->begin_ + count);
+				this->capacity_end_ = this->begin_ + new_cap;
+				fill_range_value(this->begin_, new_cap, value);
+			}
 
-		template< class InputIt >
-		void	assign( InputIt first, InputIt last ){//me manque dequoi avec le last. (?)
-			std::cout << "vector assign( itfirst, itlast)" << std::endl;
+		};
+
+		template< class It >
+		void	assign( It first, It last ){//me manque dequoi avec le last. (?)
+			typedef typename iterator_traits<It>::iterator_category category;
+			clear();
+			construct_range(It First, It Last, category());
 		};
 
 		allocator_type get_allocator() const{
@@ -162,16 +184,12 @@ class vector{
 		};
 
 		//Returns pointer to the underlying array serving as element storage. The pointer is such that range [data(); data() + size()) is always a valid range, even if the container is empty (data() is not dereferenceable in that case).
-		T* data(){
-			T* test;
-			std::cout << "vector data()" << std::endl;
-			return test;
+		value_type* data(){
+			return start_;
 		};
 
-		const T* data() const{
-			const T* test;
-			std::cout << "vector data()" << std::endl;
-			return test;
+		const value_type* data() const{
+			return start_;
 		};
 //Iterators
 
@@ -256,15 +274,25 @@ class vector{
 		}
 		
 		//Inserts elements at the specified location in the container. See cppreference for overload diff.
-		iterator insert(iterator pos, const_reference value){
-			
+		iterator insert(iterator pos, const_reference value){//1765
+			size_type pos_i = pos - begin();
+			insert(pos, 1, value);
+			return (start_ + pos_i);
 		};
 
-		void insert(iterator pos, size_type count, const T& value){
-			(void)pos;
-			(void)count;
-			(void)value;
-			std::cout << "vector insert(pos, count, value)" << std::endl;
+		void insert(iterator pos, size_type count, const_reference value){
+			pointer current = this->begin_ + (pos - begin());
+			if (count > 0){
+				//pas besoin de realloc de la nouvelle memoire. current_size + count != capacity()
+				if (count <= static_cast<size_type>(this->capacity_end_ - this->end_)){
+					size_type old_count = count;
+					pointer old_end = this->end_;
+					if (count > static_cast<size_type>(this->end_ - current)){
+						
+					}
+				}
+
+			}
 		};
 
 		template< class InputIt >
@@ -329,18 +357,47 @@ class vector{
 	private://private methods
 
 		template<class It>
-		void	push_back_loop(It start, It end){
+		void	construct_range(It start, It end, std::input_iterator_tag){
 			for(; start != end; ++start){
 				push_back(*start);
 			}
 		};
 
+		template<class ForwardIt>
+		void	construct_range(ForwardIt start, ForwardIt end, std::forward_iterator_tag){
+			size_type size = static_cast<size_type>(std::distance(start, end));
+			if (size == 0){
+				return ;
+			}
+			if (size > max_size()){
+				throw std::length_error("vector");
+			}
+			this->begin_ = allocator_.allocate(size);
+			pointer current = this->begin_;
+			this->capacity_end_ = this->begin_ + size;
+			for(; start != end; ++start){
+				allocator_.construct(current, *start);
+				++current;
+			}
+			this->end_ = current;
+		};
+
+
 		//fill with value every pointer between start and end.
-		void fill_range_value(pointer start, pointer end, const_reference value){
+		pointer fill_range_value(pointer start, pointer end, const_reference value){
 			for (; start != end; ++start){
 				allocator_.construct(start, value);
 			}
+			return start;
 		};
+
+		pointer fill_range_value(pointer start, size_type count, const_reference value){
+			for(size_type i = 0; i != count; ++i){
+				allocator_.construct(start, value);
+				++start;
+			}
+			return start;
+		}
 		
 		//cpy the value of original vector pointers too new pointers and return the new end.
 		pointer	cpy_range(pointer new_start, pointer start, pointer end){

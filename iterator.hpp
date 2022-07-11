@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 14:22:29 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/07 13:15:59 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/11 13:19:02 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ class wrap_iterator{
 		template<class srcIt>
 		wrap_iterator(const wrap_iterator<srcIt>& cpy, typename enable_if<is_same<srcIt, iterator_type>::value>::type* = 0) : base_(cpy.base()){};
 		wrap_iterator(const wrap_iterator& cpy) : base_(cpy.base()){};
+		wrap_iterator(const iterator_type& it) : base_(it){};
 	public://public method
 		iterator_type base() const{
 			return base_;

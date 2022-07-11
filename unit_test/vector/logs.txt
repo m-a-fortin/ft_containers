@@ -1,4 +1,11 @@
 Default constructor : OK
 Allocator constructor : OK
-aRange constructor : OK
+
+Testing range constructor value
+______________
+Input Iterator (isstringstream) :
+Hello Vector Unit Test
+Forward Iterator (std::forward_list) :
+9876543210
+Range constructor : OK
 Full constructor : OK

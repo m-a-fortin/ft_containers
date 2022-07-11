@@ -70,6 +70,7 @@
 		"__functional_base_03": "cpp",
 		"__functional_03": "cpp",
 		"climits": "cpp",
-		"__memory": "cpp"
+		"__memory": "cpp",
+		"forward_list": "cpp"
 	}
 }

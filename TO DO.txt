@@ -1,0 +1,4 @@
+
+test si j'ai besoin du is_integral dans le vector range constructor
+
+test assign count (zero test de fait) - p-e starter le method vector tester

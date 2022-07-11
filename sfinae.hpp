@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 18:47:54 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/07 13:15:39 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/11 11:55:22 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,4 +105,5 @@ struct is_integral<unsigned long int>{
 	static const bool value = true;
 };
 
-}
+};
+

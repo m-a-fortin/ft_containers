@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 21:03:07 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/08 11:43:55 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/11 12:13:34 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <fstream>
 #include <iterator>
 #include <sstream>
+#include <forward_list>
 //#include "../custom_allocator.hpp"
 
 int	main(void){
@@ -47,12 +48,34 @@ int	main(void){
 	logs << ("Allocator constructor : OK") << std::endl;
 	//range constructor
 	{
-		std::istringstream s{"abc"};
-    	std::istreambuf_iterator<char> start{s}, end;
+		logs << "\nTesting range constructor value\n______________\n";
+
+		logs << "Input Iterator (isstringstream) :\n";
+		{
+		std::istringstream s("Hello Vector Unit Test\n");
+    	std::istreambuf_iterator<char> start(s), end;
 		std::vector<char> test2(start, end);
 		std::vector<char>::iterator it = test2.begin();
-		logs << *it;
-		it++;
+		for(std::vector<char>::iterator it = test2.begin(); it != test2.end(); ++it){
+			logs << *it;
+		}
+		}
+		logs << "Forward Iterator (std::forward_list) :\n";
+		{
+			std::forward_list<int> f_list;
+			for (int i = 0; i < 10; i++){
+			f_list.push_front(i);
+			}
+			std::forward_list<int>::iterator start = f_list.begin();
+			std::forward_list<int>::iterator end = f_list.end();
+
+			std::vector<int> test2(start, end);
+			for (std::vector<int>::iterator it = test2.begin(); it != test2.end(); ++it){
+				logs << *it;
+			}
+			logs << std::endl;
+			
+		}
 	}
 	logs << ("Range constructor : OK") << std::endl;
 	//full constructor

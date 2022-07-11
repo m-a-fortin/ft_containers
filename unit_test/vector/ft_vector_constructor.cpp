@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 21:03:07 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/07 15:18:21 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/11 13:33:26 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,11 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
+#include <iterator>
+#include <sstream>
+#include <forward_list>
 #include "../../vector.hpp"
+//#include "../custom_allocator.hpp"
 
 int	main(void){
 
@@ -43,15 +47,42 @@ int	main(void){
 	ft::vector<std::string, std::allocator<std::string> > test(custom_alloc);
 	}
 	logs << ("Allocator constructor : OK") << std::endl;
-	//range construcot
+	//range constructor
 	{
+		logs << "\nTesting range constructor value\n______________\n";
 
+		logs << "Input Iterator (isstringstream) :\n";
+		{
+		std::istringstream s("Hello Vector Unit Test\n");
+    	std::istreambuf_iterator<char> start(s), end;
+		ft::vector<char> test2(start, end);
+		ft::vector<char>::iterator it = test2.begin();
+		for(ft::vector<char>::iterator it = test2.begin(); it != test2.end(); ++it){
+			logs << *it;
+		}
+		}
+		logs << "Forward Iterator (std::forward_list) :\n";
+		{
+			std::forward_list<int> f_list;
+			for (int i = 0; i < 10; i++){
+			f_list.push_front(i);
+			}
+			std::forward_list<int>::iterator start = f_list.begin();
+			std::forward_list<int>::iterator end = f_list.end();
+
+			ft::vector<int> test2(start, end);
+			for (ft::vector<int>::iterator it = test2.begin(); it != test2.end(); ++it){
+				logs << *it;
+			}
+			logs << std::endl;
+			
+		}
 	}
 	logs << ("Range constructor : OK") << std::endl;
 	//full constructor
-	//{
-	//ft::vector<int, std::allocator<int> > test(10, i, custom_alloc);
-	//}
-	//logs << ("Full constructor : OK") << std::endl;
+	{
+	ft::vector<int, std::allocator<int> > test(10, i, custom_alloc);
+	}
+	logs << ("Full constructor : OK") << std::endl;
 	buf.close();
 }
