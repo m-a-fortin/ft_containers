@@ -1,11 +1,50 @@
-Default constructor : OK
-Allocator constructor : OK
-
-Testing range constructor value
-______________
-Input Iterator (isstringstream) :
-Hello Vector Unit Test
-Forward Iterator (std::forward_list) :
-9876543210
-Range constructor : OK
-Full constructor : OK
+----------VECTOR INSERT----------
+Pushing 10 #
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+Inserting 5x number 42 at begin + 5
+0
+1
+2
+3
+4
+42
+42
+42
+42
+42
+5
+6
+7
+8
+9
+Empty vector + insert 42 x 10 at begin
+42
+42
+42
+42
+42
+42
+42
+42
+42
+42
+Vector with capacity of 5. Insert 10 elem.
+42
+42
+42
+42
+42
+42
+42
+42
+42
+42
