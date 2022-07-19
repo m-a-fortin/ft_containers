@@ -6,7 +6,7 @@
 /*   By: mafortin <mafortin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 17:20:26 by mafortin          #+#    #+#             */
-/*   Updated: 2022/07/11 16:53:19 by mafortin         ###   ########.fr       */
+/*   Updated: 2022/07/19 13:00:31 by mafortin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ class vector{
 				
 		};
 		
+		//cpy contructor
 		vector( const vector& other ){
 			const size_type other_size = other.capacity();
 			if (other_size > 0){
@@ -108,6 +109,7 @@ class vector{
 			delete_vector();
 		};
 
+		//= operator overload
 		vector& operator=(const vector& rhs){
 			if (this != rhs){
 				assign(rhs.begin(), rhs.end());
@@ -281,17 +283,25 @@ class vector{
 		};
 
 		void insert(iterator pos, size_type count, const_reference value){
-			pointer current = this->begin_ + (pos - begin());
 			if (count > 0){
-				//pas besoin de realloc de la nouvelle memoire. current_size + count != capacity()
-				if (count <= static_cast<size_type>(this->capacity_end_ - this->end_)){
-					size_type old_count = count;
-					pointer old_end = this->end_;
-					if (count > static_cast<size_type>(this->end_ - current)){
-						
+				size_type free_space = this->capacity_end_ - this->end_;
+				if (free_space >= count){
+					size_type nb_extra = this->end_ - pos;
+					pointer end_save = this->end_;
+					if (nb_extra > count){
+						this->end_ = cpy_range(this->end_, this->end_ - count, this->end_);
+						std::copy_backward(pos.base(), end_save - count, end_save);
+						std::fill_n(pos, count, value);
+					} else{
+						this->end_ = fill_range_value(this->end_, this->end_ + (count - nb_extra), value);
+						this->end_ = cpy_range(this->end_, pos.base(), end_save);
+						std::fill(pos.base(), old_end, value);
 					}
+					
+				}else{
+					
 				}
-
+				
 			}
 		};
 
